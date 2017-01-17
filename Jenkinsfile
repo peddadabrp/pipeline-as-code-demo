@@ -1,10 +1,10 @@
 #!groovy
 
 stage 'Dev'
-node ('docker-cloud') {
+node ('master') {
     checkout scm
     mvn 'clean package'
-    dir('target') {stash name: 'war', includes: 'x.war'}
+    dir('target') {stash name: 'war', includes: '*.war'}
 }
 
 stage 'QA'
@@ -15,7 +15,7 @@ parallel(longerTests: {
 })
 
 stage name: 'Staging', concurrency: 1
-node ('docker-cloud') {
+node ('master') {
     deploy 'staging'
 }
 
@@ -27,14 +27,14 @@ try {
 }
 
 stage name: 'Production', concurrency: 1
-node ('docker-cloud'){
+node ('master'){
     echo 'Production server looks to be alive'
     deploy 'production'
     echo "Deployed to production"
 }
 
 def mvn(args) {
-    sh "${tool 'Maven 3.x'}/bin/mvn ${args}"
+    sh "${tool 'M2'}/bin/mvn ${args}"
 }
 
 def runTests(duration) {
@@ -45,7 +45,7 @@ def runTests(duration) {
 
 def deploy(id) {
     unstash 'war'
-    sh "cp x.war /tmp/${id}.war"
+    sh "cp *.war /tmp/${id}.war"
 }
 
 def undeploy(id) {
