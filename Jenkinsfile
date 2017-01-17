@@ -3,6 +3,7 @@
 stage 'Dev'
 node ('master') {
     checkout scm
+    mvn 'org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
     mvn 'clean package'
     dir('target') {stash name: 'war', includes: '*.war'}
 }
