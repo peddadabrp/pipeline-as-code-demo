@@ -2,6 +2,7 @@
 
 stage 'Dev'
 node ('master') {
+    sh 'ls -lart && rm -rf *'
     checkout scm
     mvn 'org.sonarsource.scanner.maven:sonar-maven-plugin:3.2:sonar'
     mvn 'clean package'
